@@ -1,0 +1,21 @@
+https://www.stavros.io/tutorials/python/
+
+you can use PyVirtualDisplay with Xvfb
+
+from pyvirtualdisplay import Display
+from selenium import webdriver
+
+display = Display(visible=0, size=(800, 600))
+display.start()
+
+# now Chrome will run in a virtual display.
+browser = webdriver.Chrome()
+browser.get('http://www.google.com')
+
+
+Felix Kling and thirtydot suggested to use the [att=val] attribute selector (a[rel="external"]). But this will only work if external is the only rel value.
+
+If you want to style links that could have 1 or more rel values, you should use the [att~=val] attribute selector:
+
+a[rel~="external"] (note the tilde character)
+
