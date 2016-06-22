@@ -118,7 +118,10 @@ class Post_threads(Selenium):
                 cur.next = self.getNodesDFS(siteTable_next)
                 if cur.author is not None:
                     de.append(cur)
-            self.driver.execute_script('document.getElementById("'+siteTable_name+'").removeChild(document.getElementById("'+siteTable_name+'").firstChild)')
+            try:
+                self.driver.execute_script('document.getElementById("'+siteTable_name+'").removeChild(document.getElementById("'+siteTable_name+'").firstChild)')
+            except Exception:
+                pass
         return de
     def getComments(self):
         domains = re.split('/',self.url)
@@ -129,7 +132,6 @@ class Post_threads(Selenium):
             self.save()
     def save(self):
         appendix = re.split('/',self.url)
-        print appendix
         with open(appendix[-3]+'-'+appendix[-2]+'-log-comments.txt', 'w+') as f:
             def saveDFS(node, level):
                 if node.next == None:
@@ -197,9 +199,11 @@ class Reddit(Selenium):
     def updateCatagory(self, details):
         cur = self.url
         while cur:
-            print cur
-            self.getList(cur, details)
-            cur = self.getNextPage(cur)
+            try:
+                self.getList(cur, details)
+                cur = self.getNextPage(cur)
+            except Exception:
+                time.sleep(5)
     def getList(self, url, details):
         self.driver.get(url)
         siteTable = self.getElementById(self.driver, 'siteTable')
@@ -214,7 +218,7 @@ class Reddit(Selenium):
         self.posts.save()
         self.driver.quit()
 
-details = True
+details = False
 a = Reddit('https://www.reddit.com/r/churning/')
 a.updateCatagory(details)
 a.done()
