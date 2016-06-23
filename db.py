@@ -1,9 +1,9 @@
 import pymysql
 from pymysql.err import InternalError,ProgrammingError
 class db(object):
-    def __init__(self, db_name, host_name, user_name, passwd, db_type):
+    def __init__(self, db_name, host_name, user_name, password):
         self.db_name = db_name
-        self.conn = pymysql.connect(host='192.168.1.191', user='ray1', passwd='abc19910601', db='mysql')
+        self.conn = pymysql.connect(host=host_name, user=user_name, passwd=password, db='mysql')
     def __enter__(self):
         self.cur = self.conn.cursor()
         return self
@@ -25,9 +25,11 @@ class db(object):
         for i in data:
             col += (i[0]+',')
             if isNumber(i[1:]):
-                value += (i[1]+',')
+                a = i[1]+','
+                value += a
             else:
-                value += ('\"'+i[1]+'\",')
+                a = '\"'+i[1]+'\",'
+                value += a.decode('utf8').encode('utf8')
         return 'insert into '+table+' ('+col.rstrip(',')+') values ('+value.rstrip(',')+')'
     def build_table(self, table, value):
         '''
@@ -36,6 +38,7 @@ class db(object):
         pass
     def insert_db(self, table, data):
         self.select_db()
+        print data
         query = self.build_query(table, data)
         self.cur.execute(query)
         self.cur.connection.commit()
